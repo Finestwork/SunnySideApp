@@ -10,22 +10,20 @@
 
     <div class="search__result" ref="searchResult">
       <!-- Search Results -->
-      <button
-        class="result__btn"
-        type="button"
-        @click="selectPlace"
-        :data-index="ind"
-        v-for="(result, ind) in searchResults"
-      >
-        <span class="btn__flag">
-          <img
-            :src="result.flagSrc"
-            :alt="`${result.countryName}'s flag'`"
-            @load="areAllImagesLoaded"
-          />
-        </span>
-        <span>{{ result.name }}</span>
-      </button>
+      <div class="result__items" v-if="shouldDisplayResultItems">
+        <button
+          class="result__btn"
+          type="button"
+          @click="selectPlace"
+          :data-index="ind"
+          v-for="(result, ind) in searchResults"
+        >
+          <span class="btn__flag">
+            <img :src="result.flagSrc" :alt="`${result.countryName}'s flag'`" />
+          </span>
+          <span>{{ result.name }}</span>
+        </button>
+      </div>
 
       <!-- Loader -->
       <div class="result__loader" v-if="shouldDisplayLoading">
@@ -48,6 +46,9 @@
       </p>
 
       <!-- Error -->
+      <p class="result__error" v-if="shouldDisplaySearchError">
+        Uh-oh! Can't search, please try again later.
+      </p>
     </div>
   </div>
 </template>
@@ -70,8 +71,8 @@ export default {
       searchResults: [],
       isSearchLoading: false,
       searchNotFound: false,
+      searchError: false,
       previousSearch: '',
-      imageLoadedCtr: 0,
     };
   },
   created() {
@@ -86,6 +87,10 @@ export default {
   },
   emits: ['searchPlace'],
   methods: {
+    /*
+     * TODO:
+     * Error State
+     */
     // Search place only when key is up
     searchPlace(e) {
       const VALUE = e.target.value.trim();
@@ -139,31 +144,20 @@ export default {
             name: createCountryName(obj),
           };
         });
+
+        this.isSearchLoading = false;
       };
 
-      const handleError = (err) => {
+      const handleError = () => {
         this.isSearchLoading = false;
         this.searchNotFound = false;
-        console.log(err);
+        this.searchError = true;
       };
 
       // Send the request
       GeoLocation.getPlace({ name: VALUE })
         .then(handleResult)
         .catch(handleError);
-    },
-
-    // Only display the results if all images are finally loaded
-    areAllImagesLoaded(e) {
-      const IS_LOADED = e.target.complete;
-
-      if (IS_LOADED) {
-        this.imageLoadedCtr++;
-      }
-
-      if (this.imageLoadedCtr === this.searchResults.length) {
-        this.isSearchLoading = false;
-      }
     },
 
     // Select place to display weather
@@ -190,23 +184,41 @@ export default {
     resetData() {
       this.searchResults = [];
       this.searchResultsRaw = [];
-      this.imageLoadedCtr = 0;
       this.searchNotFound = false;
+      this.searchError = false;
     },
   },
   computed: {
+    shouldDisplayResultItems() {
+      return (
+        this.searchResults.length !== 0 &&
+        !this.isSearchLoading &&
+        !this.searchNotFound &&
+        !this.searchError
+      );
+    },
     shouldDisplayLoading() {
       return (
         this.searchResults.length === 0 &&
         this.isSearchLoading &&
-        !this.searchNotFound
+        !this.searchNotFound &&
+        !this.searchError
       );
     },
     shouldDisplaySearchNotFound() {
       return (
         this.searchResults.length === 0 &&
         !this.isSearchLoading &&
-        this.searchNotFound
+        this.searchNotFound &&
+        !this.searchError
+      );
+    },
+    shouldDisplaySearchError() {
+      return (
+        this.searchResults.length === 0 &&
+        !this.isSearchLoading &&
+        !this.searchNotFound &&
+        this.searchError
       );
     },
   },
@@ -315,6 +327,7 @@ export default {
       }
     }
 
+    .result__error,
     .result__search-not-found{
       text-align: center;
       font-weight: 600;
