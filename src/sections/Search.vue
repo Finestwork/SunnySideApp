@@ -9,12 +9,31 @@
     </div>
 
     <div class="search__result" ref="searchResult">
-      <button class="result__btn" type="button" v-for="result in results">
+      <!-- Search Results -->
+      <button class="result__btn" type="button" v-for="result in searchResults">
         <span class="btn__flag">
           <img :src="result.flagSrc" :alt="`${result.countryName}'s flag'`" />
         </span>
         <span>{{ result.name }}</span>
       </button>
+
+      <!-- Loader -->
+      <div class="result__loader" v-if="shouldDisplayLoading">
+        <div class="loader" v-for="n in 5">
+          <ContentLoader
+            viewBox="0 0 400 20"
+            :speed="2"
+            primaryColor="#f3f3f3"
+            secondaryColor="#ecebeb"
+          >
+            <rect x="25" y="2.5" rx="3" ry="3" width="300" height="15" />
+            <circle cx="10" cy="10" r="10" />
+          </ContentLoader>
+        </div>
+      </div>
+      <!-- Not Found -->
+
+      <!-- Error -->
     </div>
   </div>
 </template>
@@ -24,10 +43,17 @@ import EventRateLimiter from '../assets/js/Helpers/EventRateLimiter';
 import GeoLocation from '../assets/js/Helpers/APIs/GeoLocation';
 import PositionHelper from '../assets/js/Helpers/PositionHelper';
 
+// NPM
+import { ContentLoader } from 'vue-content-loader';
+
 export default {
+  components: {
+    ContentLoader,
+  },
   data() {
     return {
-      results: [],
+      searchResults: [],
+      isSearchLoading: false,
     };
   },
   created() {
@@ -44,47 +70,60 @@ export default {
     searchPlace(e) {
       const VALUE = e.target.value.trim();
 
-      if (VALUE !== '') {
-        // Functions to handle the request
-        const handleResult = (res) => {
-          console.log(res);
-
-          // If no result found return nothing
-          if (!res.data || !res.data.hasOwnProperty('results')) return;
-
-          const createCountryName = (obj) => {
-            let name = obj.name === obj.country ? '' : `${obj.name}, `;
-
-            if (obj.hasOwnProperty('admin1')) name += `${obj.admin1}, `;
-            if (obj.hasOwnProperty('admin2')) name += `${obj.admin2}, `;
-            if (obj.hasOwnProperty('admin3')) name += `${obj.admin3}, `;
-
-            name += obj.country;
-
-            return name;
-          };
-
-          // Create a new array
-          this.results = res.data.results.map((obj) => {
-            return {
-              flagSrc: `/images/flags/${obj.country_code.toLowerCase()}.svg`,
-              countryName: `${obj.country} flag`,
-              name: createCountryName(obj),
-            };
-          });
-          console.log(this.results);
-        };
-
-        const handleError = (err) => {
-          console.log(err);
-        };
-
-        // Send the request
-        GeoLocation.getPlace({ name: VALUE })
-          .then(handleResult)
-          .catch(handleError);
+      // If empty string, clear the array
+      if (VALUE === '') {
+        this.searchPlace = [];
+        return;
       }
-      console.log(VALUE);
+
+      // if there's a new search, clear the previous result
+      this.isSearchLoading = true;
+      this.searchResults = [];
+
+      // Functions to handle the request
+      const handleResult = (res) => {
+        // If no result found return nothing
+        if (!res.data || !res.data.hasOwnProperty('results')) return;
+
+        const createCountryName = (obj) => {
+          let name = obj.name === obj.country ? '' : `${obj.name}, `;
+
+          if (obj.hasOwnProperty('admin1')) name += `${obj.admin1}, `;
+          if (obj.hasOwnProperty('admin2')) name += `${obj.admin2}, `;
+          if (obj.hasOwnProperty('admin3')) name += `${obj.admin3}, `;
+
+          name += obj.country;
+
+          return name;
+        };
+
+        // Create a new array
+        this.searchResults = res.data.results.map((obj) => {
+          return {
+            flagSrc: `/images/flags/${obj.country_code.toLowerCase()}.svg`,
+            countryName: `${obj.country} flag`,
+            name: createCountryName(obj),
+          };
+        });
+
+        this.this.isSearchLoading = false;
+        console.log(res);
+      };
+
+      const handleError = (err) => {
+        this.isSearchLoading = false;
+        console.log(err);
+      };
+
+      // Send the request
+      GeoLocation.getPlace({ name: VALUE })
+        .then(handleResult)
+        .catch(handleError);
+    },
+  },
+  computed: {
+    shouldDisplayLoading() {
+      return this.searchResults.length === 0 && this.isSearchLoading;
     },
   },
 };
@@ -172,6 +211,24 @@ export default {
             height: 100%;
           }
         }
+    }
+
+    .result__loader{
+      @include margin.vertical((
+        xsm: 13
+      ));
+      @include margin.horizontal((
+        xsm: 10
+      ));
+      .loader{
+        @include margin.bottom((
+          xsm: 8
+        ));
+
+        &:last-of-type{
+          margin-bottom: 0;
+        }
+      }
     }
   }
 }
