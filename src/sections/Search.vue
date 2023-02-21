@@ -49,12 +49,27 @@ export default {
         const handleResult = (res) => {
           console.log(res);
 
+          // If no result found return nothing
           if (!res.data || !res.data.hasOwnProperty('results')) return;
+
+          const createCountryName = (obj) => {
+            let name = obj.name === obj.country ? '' : `${obj.name}, `;
+
+            if (obj.hasOwnProperty('admin1')) name += `${obj.admin1}, `;
+            if (obj.hasOwnProperty('admin2')) name += `${obj.admin2}, `;
+            if (obj.hasOwnProperty('admin3')) name += `${obj.admin3}, `;
+
+            name += obj.country;
+
+            return name;
+          };
+
+          // Create a new array
           this.results = res.data.results.map((obj) => {
             return {
               flagSrc: `/images/flags/${obj.country_code.toLowerCase()}.svg`,
-              countryName: obj.country,
-              name: obj.name,
+              countryName: `${obj.country} flag`,
+              name: createCountryName(obj),
             };
           });
           console.log(this.results);
