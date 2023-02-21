@@ -4,15 +4,25 @@
       <input
         type="text"
         placeholder="Search city name here"
-        @input="searchPlace"
+        @keyup="searchPlace"
       />
     </div>
 
     <div class="search__result" ref="searchResult">
       <!-- Search Results -->
-      <button class="result__btn" type="button" v-for="result in searchResults">
+      <button
+        class="result__btn"
+        type="button"
+        @click="selectPlace"
+        :data-index="ind"
+        v-for="(result, ind) in searchResults"
+      >
         <span class="btn__flag">
-          <img :src="result.flagSrc" :alt="`${result.countryName}'s flag'`" />
+          <img
+            :src="result.flagSrc"
+            :alt="`${result.countryName}'s flag'`"
+            @load="areAllImagesLoaded"
+          />
         </span>
         <span>{{ result.name }}</span>
       </button>
@@ -31,7 +41,11 @@
           </ContentLoader>
         </div>
       </div>
+
       <!-- Not Found -->
+      <p class="result__search-not-found" v-if="shouldDisplaySearchNotFound">
+        Search Not Found
+      </p>
 
       <!-- Error -->
     </div>
@@ -52,8 +66,12 @@ export default {
   },
   data() {
     return {
+      searchResultsRaw: [],
       searchResults: [],
       isSearchLoading: false,
+      searchNotFound: false,
+      previousSearch: '',
+      imageLoadedCtr: 0,
     };
   },
   created() {
@@ -66,25 +84,38 @@ export default {
       10
     );
   },
+  emits: ['searchPlace'],
   methods: {
+    // Search place only when key is up
     searchPlace(e) {
       const VALUE = e.target.value.trim();
 
-      // If empty string, clear the array
+      // Do nothing VALUE is the same as the previous search
+      if (this.previousSearch === VALUE) return;
+
+      // If empty string, clear do not search
       if (VALUE === '') {
-        this.searchPlace = [];
+        this.resetData();
+        this.isSearchLoading = false;
+        this.previousSearch = '';
         return;
       }
 
       // if there's a new search, clear the previous result
+      this.resetData();
       this.isSearchLoading = true;
-      this.searchResults = [];
+      this.previousSearch = VALUE;
 
       // Functions to handle the request
       const handleResult = (res) => {
         // If no result found return nothing
-        if (!res.data || !res.data.hasOwnProperty('results')) return;
+        if (!res.data || !res.data.hasOwnProperty('results')) {
+          this.isSearchLoading = false;
+          this.searchNotFound = true;
+          return;
+        }
 
+        // Function to properly display the search result
         const createCountryName = (obj) => {
           let name = obj.name === obj.country ? '' : `${obj.name}, `;
 
@@ -97,6 +128,9 @@ export default {
           return name;
         };
 
+        // Save the result
+        this.searchResultsRaw = res.data.results;
+
         // Create a new array
         this.searchResults = res.data.results.map((obj) => {
           return {
@@ -105,13 +139,11 @@ export default {
             name: createCountryName(obj),
           };
         });
-
-        this.this.isSearchLoading = false;
-        console.log(res);
       };
 
       const handleError = (err) => {
         this.isSearchLoading = false;
+        this.searchNotFound = false;
         console.log(err);
       };
 
@@ -120,10 +152,62 @@ export default {
         .then(handleResult)
         .catch(handleError);
     },
+
+    // Only display the results if all images are finally loaded
+    areAllImagesLoaded(e) {
+      const IS_LOADED = e.target.complete;
+
+      if (IS_LOADED) {
+        this.imageLoadedCtr++;
+      }
+
+      if (this.imageLoadedCtr === this.searchResults.length) {
+        this.isSearchLoading = false;
+      }
+    },
+
+    // Select place to display weather
+    selectPlace(e) {
+      const BTN = e.currentTarget;
+      const IND = parseInt(BTN.dataset.index);
+
+      // Search weather to display
+      this.$emit('searchPlace', this.searchResultsRaw[IND]);
+
+      // Reset the component
+      this.resetData();
+      this.isSearchLoading = false;
+      this.previousSearch = '';
+    },
+
+    /*
+     * =====================
+     * Helpers
+     * =====================
+     */
+
+    // Resets everything except to loading state
+    resetData() {
+      this.searchResults = [];
+      this.searchResultsRaw = [];
+      this.imageLoadedCtr = 0;
+      this.searchNotFound = false;
+    },
   },
   computed: {
     shouldDisplayLoading() {
-      return this.searchResults.length === 0 && this.isSearchLoading;
+      return (
+        this.searchResults.length === 0 &&
+        this.isSearchLoading &&
+        !this.searchNotFound
+      );
+    },
+    shouldDisplaySearchNotFound() {
+      return (
+        this.searchResults.length === 0 &&
+        !this.isSearchLoading &&
+        this.searchNotFound
+      );
     },
   },
 };
@@ -230,6 +314,19 @@ export default {
         }
       }
     }
+
+    .result__search-not-found{
+      text-align: center;
+      font-weight: 600;
+      color: map.get(text.$main, 300);
+      @include font-size.responsive((
+        xsm: map.get(major-second.$scale, 4)
+      ));
+      @include padding.vertical((
+          xsm: 15
+      ));
+    }
+
   }
 }
 </style>

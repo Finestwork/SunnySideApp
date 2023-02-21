@@ -1,9 +1,9 @@
 <template>
   <div class="row">
-    <div class="col-lg-9">
-      <Search />
+    <div class="col-xsm-12 col-lg-9">
+      <Search @searchPlace="fetchWeather" />
     </div>
-    <div class="col-lg-3">
+    <div class="col-xsm-12 col-lg-3">
       <Daily />
     </div>
   </div>
@@ -17,6 +17,11 @@ export default {
   components: {
     Search,
     Daily,
+  },
+  methods: {
+    fetchWeather(weatherObj) {
+      console.log(weatherObj);
+    },
   },
 };
 </script>
