@@ -1,6 +1,8 @@
 <template>
   <div class="row">
-    <div class="col-lg-9">Test</div>
+    <div class="col-lg-9">
+      <Search />
+    </div>
     <div class="col-lg-3">
       <Daily />
     </div>
@@ -8,9 +10,12 @@
 </template>
 
 <script>
+import Search from './sections/Search.vue';
 import Daily from './sections/Daily.vue';
+
 export default {
   components: {
+    Search,
     Daily,
   },
 };
@@ -19,6 +24,7 @@ export default {
 <style lang="scss">
 @use 'sass:map';
 @use 'assets/scss/1-Settings/css-properties/colors/text';
+@use 'assets/scss/2-Tools/mixins/css-properties/padding';
 @use 'assets/scss/3-Generics/reset-form-fields';
 @use 'assets/scss/3-Generics/normalize';
 @use 'assets/scss/5-Layouts/columns';
@@ -41,10 +47,14 @@ body {
   background-color: map.get(text.$main, 900);
 }
 
+// prettier-ignore
 main {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
+  @include padding.vertical((
+      xsm: 20
+  ));
 }
 
 .row {
