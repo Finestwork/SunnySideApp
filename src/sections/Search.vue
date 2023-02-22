@@ -276,6 +276,7 @@ export default {
     font-weight: 600;
 
     .result__btn{
+      width: 100%;
         display: flex;
         justify-content: flex-start;
         cursor: pointer;

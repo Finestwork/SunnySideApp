@@ -9,6 +9,7 @@ export default class GeoLocation {
   static #DEFAULT_HEADERS = {
     'Content-Type': 'application/json',
   };
+
   static getPlace(params = {}) {
     const URL = `https://geocoding-api.open-meteo.com/v1/search`;
 

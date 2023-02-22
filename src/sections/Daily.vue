@@ -6,7 +6,7 @@
         <span class="daily-forecast__day">Today</span>
         <span class="daily-forecast__img-wrapper">
           <span class="daily-forecast__img">
-            <img src="/images/sun.png" />
+            <img src="/images/weather/day/0.png" />
           </span>
           <span class="daily-forecast__weather">Cloudy</span>
         </span>
