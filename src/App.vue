@@ -3,6 +3,7 @@
     <div class="col-xsm-12 col-lg-9">
       <Search @searchPlace="fetchWeather" />
       <Hourly :hourlyData="hourlyData" />
+      <DayTable :dayInfo="dayInfo" />
     </div>
     <div class="col-xsm-12 col-lg-3">
       <Daily />
@@ -14,6 +15,7 @@
 import Search from './sections/Search.vue';
 import Daily from './sections/Daily.vue';
 import Hourly from './sections/Hourly.vue';
+import DayTable from './sections/DayTable.vue';
 
 // Helpers
 import Weather from './assets/js/Helpers/APIs/Weather';
@@ -25,18 +27,19 @@ export default {
     Search,
     Daily,
     Hourly,
+    DayTable,
   },
   data() {
     return {
       hourlyData: { hourly_units: {}, data: [] },
+      dayInfo: {},
     };
   },
   mounted() {
-    const handleResult = (res) => {
+    const handleHourlyDataRequest = (res) => {
       const DATA = res.data;
 
       if (Object.keys(DATA).length !== 0) {
-        const HOURLY_TIME_LIST = DATA.hourly.time;
         const HOURLY_WEATHER_CODE_LIST = DATA.hourly.weathercode;
         const HOURLY_APPARENT_TEMP = DATA.hourly.apparent_temperature;
 
@@ -71,25 +74,60 @@ export default {
             data: HOURLY_DATA_ARR,
           }
         );
-
-        console.log(DATA);
-        console.log(this.hourlyData);
       }
     };
-    const handleError = (err) => {
+    const handleDailyDataRequest = (res) => {
+      console.log(res.data);
+      const DATA = res.data;
+      const APPARENT_TEMP_MAX = DATA.daily.apparent_temperature_max[0];
+      const APPARENT_TEMP_MIN = DATA.daily.apparent_temperature_min[0];
+      const SUNRISE = DateConversion.shortenTime(DATA.daily.sunrise[0]);
+      const SUNSET = DateConversion.shortenTime(DATA.daily.sunset[0]);
+      const WINDSPEED = DATA.daily.windspeed_10m_max[0];
+
+      this.dayInfo = Object.assign(
+        {},
+        {
+          apparentTemp: {
+            max: APPARENT_TEMP_MAX,
+            min: APPARENT_TEMP_MIN,
+          },
+          sunrise: SUNRISE,
+          sunset: SUNSET,
+          windspeed: WINDSPEED,
+        }
+      );
+    };
+    const handleGeneralError = (err) => {
       console.log(err);
     };
 
+    // Add timezone later
     // Testing
-    Weather.getWeather({
+    const HOURLY_REQUEST = Weather.getWeather({
       latitude: 14.6,
       longitude: 120.98,
+      timezone: 'Asia/Bangkok',
       hourly: 'apparent_temperature,weathercode',
       start_date: DateConversion.toYMD(new Date()),
       end_date: DateConversion.toYMD(new Date()),
-    })
-      .then(handleResult)
-      .catch(handleError);
+    });
+    const DAILY_REQUEST = Weather.getWeather({
+      latitude: 14.6,
+      longitude: 120.98,
+      timezone: 'Asia/Bangkok',
+      daily:
+        'weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,windspeed_10m_max',
+      start_date: DateConversion.toYMD(new Date()),
+      end_date: DateConversion.toYMD(DateConversion.addDate(6)),
+    });
+
+    Promise.all([HOURLY_REQUEST, DAILY_REQUEST])
+      .then(([hourlyData, dailyData]) => {
+        handleHourlyDataRequest(hourlyData);
+        handleDailyDataRequest(dailyData);
+      })
+      .catch(handleGeneralError);
   },
   methods: {
     fetchWeather({ latitude, longitude }) {
