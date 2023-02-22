@@ -71,7 +71,7 @@ export default {
 .hourly {
   padding: .1rem;
   overflow: hidden;
-  background-color: map.get(text.$main, 500);
+  background-color: darken(map.get(main.$primary, 200), 75%);
   border-radius: 8px;
   @include margin.top((
     xsm: 25
@@ -82,7 +82,7 @@ export default {
 
   &__title{
     font-weight: 700;
-    color: map.get(text.$main, 300);
+    color: map.get(main.$primary, 100);
     @include margin.bottom((
       xsm: 30
     ));
@@ -94,7 +94,7 @@ export default {
   &__time{
     white-space: nowrap;
     font-weight: 600;
-    color: map.get(main.$primary, 300);
+    color: map.get(main.$secondary, 500);
     @include font-size.responsive((
       xsm: map.get(major-second.$scale, 4)
     ));

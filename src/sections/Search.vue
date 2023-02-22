@@ -229,6 +229,7 @@ export default {
 @use 'sass:map';
 @use '../assets/scss/1-Settings/css-properties/font-size/major-second';
 @use '../assets/scss/1-Settings/css-properties/colors/text';
+@use '../assets/scss/1-Settings/css-properties/colors/main';
 @use '../assets/scss/2-Tools/mixins/css-properties/padding';
 @use '../assets/scss/2-Tools/mixins/css-properties/font-size';
 @use '../assets/scss/2-Tools/mixins/css-properties/margin';
@@ -245,7 +246,7 @@ export default {
       border-radius: 8px;
       transition: box-shadow .35s ease-in-out;
       color: map.get(text.$main, 50);
-      background-color: map.get(text.$main, 500);
+      background-color: darken(map.get(main.$primary, 200), 75%);
       @include padding.all-sides((
         xsm: 13
       ));
@@ -254,12 +255,12 @@ export default {
       ));
       &:focus {
         outline: none;
-        box-shadow: 0 0 0 4px rgba(map.get(text.$main, 500), 0.5);
+        box-shadow: 0 0 0 4px rgba(map.get(main.$primary, 800), 0.5);
       }
 
       &:hover,
       &:focus{
-        background-color: darken(map.get(text.$main, 500), 3%);
+        background-color: darken(map.get(main.$primary, 800), 3%);
       }
     }
   }

@@ -113,6 +113,7 @@ export default {
 <style lang="scss">
 @use 'sass:map';
 @use 'assets/scss/1-Settings/css-properties/colors/text';
+@use 'assets/scss/1-Settings/css-properties/colors/main';
 @use 'assets/scss/2-Tools/mixins/css-properties/padding';
 @use 'assets/scss/3-Generics/reset-form-fields';
 @use 'assets/scss/3-Generics/normalize';
@@ -129,11 +130,13 @@ html {
   font-size: 62.5%; // 10px of 16px
   box-sizing: border-box;
 }
+//#daedf4
 body {
   font-size: 1.6rem;
+  color: map.get(text.$main, 800);
   font-family: 'Open Sans', sans-serif;
   overflow-x: hidden;
-  background-color: map.get(text.$main, 900);
+  background-color: map.get(main.$primary, 50);
 }
 
 // prettier-ignore

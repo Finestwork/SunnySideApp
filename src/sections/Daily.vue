@@ -19,6 +19,7 @@
 <style lang="scss" scoped>
 @use 'sass:map';
 @use '../assets/scss/1-Settings/css-properties/colors/text';
+@use '../assets/scss/1-Settings/css-properties/colors/main';
 @use '../assets/scss/1-Settings/css-properties/font-size/major-second';
 @use '../assets/scss/2-Tools/mixins/css-properties/width-and-height';
 @use '../assets/scss/2-Tools/mixins/css-properties/font-size';
@@ -28,7 +29,7 @@
 // prettier-ignore
 .daily-forecast{
   border-radius: 20px;
-  background-color: map.get(text.$main, 500);
+  background-color: darken(map.get(main.$primary, 200), 75%);
   @include padding.all-sides((
       xsm: [20, 25]
   ));
@@ -36,7 +37,7 @@
   &__title{
     font-weight: 700;
     text-transform: uppercase;
-    color: map.get(text.$main, 100);
+    color: map.get(main.$primary, 100);
     @include font-size.responsive((
         xsm: map.get(major-second.$scale, 4)
     ));
