@@ -21,6 +21,7 @@
 
 <script>
 import { Splide, SplideSlide } from '@splidejs/vue-splide';
+
 export default {
   components: {
     Splide,
@@ -103,39 +104,41 @@ export default {
     }
   }
 
-  &::v-deep .splide{
-    cursor: grab;
-    list-style: none;
-    display: flex;
-    @include margin.all-sides((
-      xsm: [20, 10]
-    ));
-    &__track{
-      width: 100%;
-    }
-    &__list{
+  & :deep(){
+    .splide{
+      cursor: grab;
+      list-style: none;
       display: flex;
-    }
-    &__slide{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      border-right: 2px solid map.get(text.$main, 400);
-      @include margin.right((
-        xsm: 25
+      @include margin.all-sides((
+        xsm: [20, 10]
       ));
-      @include padding.left((
-        xsm: 35
-      ));
-      @include padding.right((
-        xsm: 35
-      ));
-      @include padding.vertical((
-        xsm: 7
-      ));
+      &__track{
+        width: 100%;
+      }
+      &__list{
+        display: flex;
+      }
+      &__slide{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-right: 2px solid map.get(text.$main, 400);
+        @include margin.right((
+          xsm: 25
+        ));
+        @include padding.left((
+          xsm: 35
+        ));
+        @include padding.right((
+          xsm: 35
+        ));
+        @include padding.vertical((
+          xsm: 7
+        ));
 
-      &:last-of-type{
-        border-right: 0;
+        &:last-of-type{
+          border-right: 0;
+        }
       }
     }
   }
@@ -145,6 +148,5 @@ export default {
     user-select: none;
     cursor: grabbing;
   }
-
 }
 </style>
