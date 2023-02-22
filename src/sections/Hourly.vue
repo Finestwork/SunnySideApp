@@ -1,5 +1,6 @@
 <template>
-  <div class="hourly">
+  <section class="hourly">
+    <h2 class="hourly__title">Hourly Forecast</h2>
     <Splide
       :options="splideOptions"
       @splide:drag="onSplideDrag"
@@ -16,7 +17,7 @@
         >
       </SplideSlide>
     </Splide>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -40,6 +41,7 @@ export default {
         arrows: false,
         pagination: false,
         live: false,
+        autoWidth: true,
       },
     };
   },
@@ -60,6 +62,7 @@ export default {
 @use 'sass:map';
 @use '../assets/scss/1-Settings/css-properties/font-size/major-second';
 @use '../assets/scss/1-Settings/css-properties/colors/text';
+@use '../assets/scss/1-Settings/css-properties/colors/main';
 @use '../assets/scss/2-Tools/mixins/css-properties/margin';
 @use '../assets/scss/2-Tools/mixins/css-properties/padding';
 @use '../assets/scss/2-Tools/mixins/css-properties/font-size';
@@ -73,11 +76,25 @@ export default {
   @include margin.top((
     xsm: 25
   ));
+  @include padding.vertical((
+    xsm: 25
+  ));
+
+  &__title{
+    font-weight: 700;
+    color: map.get(text.$main, 300);
+    @include margin.bottom((
+      xsm: 30
+    ));
+    @include margin.left((
+      xsm: 20
+    ));
+  }
 
   &__time{
     white-space: nowrap;
     font-weight: 600;
-    color: map.get(text.$main, 300);
+    color: map.get(main.$primary, 300);
     @include font-size.responsive((
       xsm: map.get(major-second.$scale, 4)
     ));
@@ -109,9 +126,6 @@ export default {
       cursor: grab;
       list-style: none;
       display: flex;
-      @include margin.all-sides((
-        xsm: [20, 10]
-      ));
       &__track{
         width: 100%;
       }
@@ -122,16 +136,9 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
+        flex-shrink: 0;
+        width: 185px;
         border-right: 2px solid map.get(text.$main, 400);
-        @include margin.right((
-          xsm: 25
-        ));
-        @include padding.left((
-          xsm: 35
-        ));
-        @include padding.right((
-          xsm: 35
-        ));
         @include padding.vertical((
           xsm: 7
         ));
