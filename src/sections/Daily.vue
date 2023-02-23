@@ -3,14 +3,14 @@
     <h2 class="daily-forecast__title">7-Day Forecast</h2>
     <ul class="daily-forecast__list">
       <li class="daily-forecast__list-item" v-for="data in forecast">
-        <span class="daily-forecast__day">{{data.time}}</span>
+        <span class="daily-forecast__day">{{ data.time }}</span>
         <span class="daily-forecast__img-wrapper">
           <span class="daily-forecast__img">
-            <img :src="data.imgSrc" alt="Weather Image" />
+            <img :src="data.imgSrc" alt="Weather Image"/>
           </span>
-          <span class="daily-forecast__weather">{{data.imgInterpretation}}</span>
+          <span class="daily-forecast__weather">{{ data.imgInterpretation }}</span>
         </span>
-        <span class="daily-forecast__temperature">{{data.temperature.max}}°C</span>
+        <span class="daily-forecast__temperature">{{ data.temperature.max }}°C</span>
       </li>
     </ul>
   </aside>
@@ -36,16 +36,27 @@ export default {
 @use '../assets/scss/2-Tools/mixins/css-properties/font-size';
 @use '../assets/scss/2-Tools/mixins/css-properties/padding';
 @use '../assets/scss/2-Tools/mixins/css-properties/margin';
+@use '../assets/scss/2-Tools/mixins/css-properties/all-properties';
 
 // prettier-ignore
-.daily-forecast{
+.daily-forecast {
   border-radius: 20px;
   background-color: darken(map.get(main.$primary, 200), 75%);
+  @include all-properties.init((
+      xsm: (
+          max-width: 500px
+      ),
+      xl: unset
+  ));
+  @include margin.top((
+      xsm: 35,
+      xl: 0
+  ));
   @include padding.all-sides((
       xsm: [20, 25]
   ));
 
-  &__title{
+  &__title {
     font-weight: 700;
     text-transform: uppercase;
     color: map.get(main.$primary, 100);
@@ -57,16 +68,17 @@ export default {
     ));
   }
 
-  &__list{
+  &__list {
     list-style: none;
-    &-item{
+
+    &-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid map.get(text.$main, 400);
       @include font-size.responsive((
-        xsm: map.get(major-second.$scale, 3)
-    ));
+          xsm: map.get(major-second.$scale, 3)
+      ));
       @include padding.bottom((
           xsm: 15
       ));
@@ -74,7 +86,7 @@ export default {
           xsm: 35
       ));
 
-      &:last-of-type{
+      &:last-of-type {
         margin-bottom: 0;
         padding-bottom: 0;
         border: none;
@@ -82,44 +94,46 @@ export default {
     }
   }
 
-  &__day{
+  &__day {
     color: map.get(text.$main, 100);
   }
 
-  &__img-wrapper{
+  &__img-wrapper {
     display: flex;
     align-items: center;
   }
 
-  &__img{
+  &__img {
     @include width-and-height.set((
-      xsm: (width: 35px)
+        xsm: (width: 35px)
     ));
     @include margin.right((
         xsm: 7
     ));
-    > img{
+
+    > img {
       width: 100%;
     }
   }
 
-  &__temperature{
+  &__temperature {
     width: 50px;
     text-align: right;
     color: map.get(main.$primary, 500);
   }
-  &__day{
+
+  &__day {
     width: 30px;
   }
 
   &__day,
-  &__weather{
+  &__weather {
     color: map.get(text.$main, 100);
   }
 
   &__day,
   &__temperature,
-  &__weather{
+  &__weather {
     font-weight: 600;
   }
 

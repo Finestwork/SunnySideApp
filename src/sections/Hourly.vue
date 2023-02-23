@@ -72,9 +72,9 @@ export default {
   padding: .1rem;
   overflow: hidden;
   background-color: darken(map.get(main.$primary, 200), 75%);
-  border-radius: 8px;
+  border-radius: 20px;
   @include margin.top((
-    xsm: 25
+    xsm: 25,
   ));
   @include padding.vertical((
     xsm: 25

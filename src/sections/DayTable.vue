@@ -86,7 +86,7 @@ export default {
     },
   },
   computed: {
-    getRootWrapperClass(){
+    getRootWrapperClass() {
       let BASE = 'day-table';
       BASE += this.dayInfo.isDay ? ' daytime' : ' nighttime';
       return BASE;
@@ -103,29 +103,38 @@ export default {
 @use '../assets/scss/2-Tools/mixins/css-properties/margin';
 @use '../assets/scss/2-Tools/mixins/css-properties/font-size';
 @use '../assets/scss/2-Tools/mixins/css-properties/padding';
+@use '../assets/scss/2-Tools/mixins/css-properties/all-properties';
 
 // prettier-ignore
 .day-table {
-  display: flex;
-  align-items: center;
   @include margin.top((
-      xsm: 80
+      xsm: 15
+  ));
+  @include all-properties.init((
+      xsm: (
+          display: flex,
+          flex-direction: column,
+          align-items: center
+      ),
+      xl: (
+          flex-direction: row,
+      )
   ));
 
   /* States */
-  &.daytime{
-    .day-table__img-wrapper .img-bg{
+  &.daytime {
+    .day-table__img-wrapper .img-bg {
       background: radial-gradient(rgba(255, 233, 5, 0.15), rgba(255, 233, 5, 0));
     }
   }
-  &.nighttime{
-    .day-table__img-wrapper .img-bg{
+
+  &.nighttime {
+    .day-table__img-wrapper .img-bg {
       background: radial-gradient(rgba(5, 9, 255, 0.25), rgba(5, 9, 255, 0));
     }
   }
 
   /* Children */
-
   &__img-wrapper {
     position: relative;
     width: 250px;
@@ -134,7 +143,7 @@ export default {
     align-items: center;
     justify-content: center;
     @include margin.right((
-        xsm: 35
+        xl: 35
     ));
 
     .img-bg {
@@ -161,9 +170,17 @@ export default {
   }
 
   &__list {
-    display: flex;
-    flex-wrap: wrap;
-    list-style: none;
+    @include all-properties.init((
+        xsm: (
+            display: flex,
+            flex-wrap: wrap,
+            list-style: none,
+            justify-content: center
+        ),
+        xl: (
+          justify-content: flex-start
+        )
+    ))
   }
 
   &__list-item {
@@ -175,10 +192,7 @@ export default {
         xsm: 4
     ));
     @include padding.horizontal((
-        xsm: 4
-    ));
-    @include margin.right((
-        xsm: 35
+        xsm: 10
     ));
     @include margin.bottom((
         xsm: 35
@@ -186,6 +200,7 @@ export default {
 
     .list {
       &__value {
+        flex-shrink: 0;
         @include margin.left((
             xsm: 20
         ));
@@ -196,15 +211,20 @@ export default {
         font-weight: 700;
         color: map.get(main.$primary, 900);
         @include font-size.responsive((
-            xsm: map.get(major-second.$scale, 3)
+            xsm: map.get(major-second.$scale, 2)
         ));
       }
 
       &__icon {
-        display: flex;
-        width: 20px;
-        height: 20px;
-        fill: map.get(main.$primary, 900);
+        @include all-properties.init((
+            xsm: (
+                display: flex,
+                flex-shrink: 0,
+                width: 15px,
+                height: 15px,
+                fill: map.get(main.$primary, 900),
+            )
+        ));
         @include margin.right((
             xsm: 8
         ));

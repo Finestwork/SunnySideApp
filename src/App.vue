@@ -1,11 +1,11 @@
 <template>
   <div class="row">
-    <div class="col-xsm-12 col-lg-9">
+    <div class="col-xsm-12 col-xl-9">
       <Search @searchPlace="fetchWeather" />
       <DayTable :dayInfo="dayInfo" />
       <Hourly :hourlyData="hourlyData" />
     </div>
-    <div class="col-xsm-12 col-lg-3">
+    <div class="col-xsm-12 col-xl-3">
       <Daily :forecast="dailyForecast"/>
     </div>
   </div>
@@ -153,11 +153,12 @@ export default {
   margin: 0;
   box-sizing: inherit;
 }
+
 html {
   font-size: 62.5%; // 10px of 16px
   box-sizing: border-box;
 }
-//#daedf4
+
 body {
   font-size: 1.6rem;
   color: map.get(text.$main, 800);
@@ -171,6 +172,9 @@ main {
   min-height: 100vh;
   display: flex;
   align-items: center;
+  @include padding.horizontal((
+    xsm: 35
+  ));
   @include padding.vertical((
       xsm: 20
   ));
