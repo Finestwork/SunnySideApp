@@ -1,30 +1,58 @@
 <template>
   <aside class="daily-forecast">
     <h2 class="daily-forecast__title">7-Day Forecast</h2>
-    <ul class="daily-forecast__list">
+    <ul class="daily-forecast__list" v-if="shouldDisplayMainContent">
       <li class="daily-forecast__list-item" v-for="data in forecast">
         <span class="daily-forecast__day">{{ data.time }}</span>
         <span class="daily-forecast__img-wrapper">
           <span class="daily-forecast__img">
-            <img :src="data.imgSrc" alt="Weather Image"/>
+            <img :src="data.imgSrc" alt="Weather Image" />
           </span>
-          <span class="daily-forecast__weather">{{ data.imgInterpretation }}</span>
+          <span class="daily-forecast__weather">{{
+            data.imgInterpretation
+          }}</span>
         </span>
-        <span class="daily-forecast__temperature">{{ data.temperature.max }}°C</span>
+        <span class="daily-forecast__temperature"
+          >{{ data.temperature.max }}°C</span
+        >
       </li>
     </ul>
+    <p class="daily-forecast__empty-state" v-if="shouldDisplayEmptyContent">
+      No data to display
+    </p>
+    <Loader class="daily-forecast__loader" v-if="shouldDisplayLoader" />
   </aside>
 </template>
 
 <script>
+import Loader from '../components/Loader.vue';
+
 export default {
+  components: {
+    Loader,
+  },
   props: {
+    isLoading: {
+      type: Boolean,
+      required: true,
+    },
     forecast: {
       type: Array,
-      required: true
-    }
-  }
-}
+      required: true,
+    },
+  },
+  computed: {
+    shouldDisplayMainContent() {
+      return this.forecast.length !== 0 && !this.isLoading;
+    },
+    shouldDisplayEmptyContent() {
+      return this.forecast.length === 0 && !this.isLoading;
+    },
+    shouldDisplayLoader() {
+      return this.forecast.length === 0 && this.isLoading;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -92,6 +120,28 @@ export default {
         border: none;
       }
     }
+  }
+
+  &__empty-state{
+    font-weight: 500;
+    text-align: center;
+    font-style: italic;
+    color: map.get(main.$primary, 700);
+    @include font-size.responsive((
+        xsm: map.get(major-second.$scale, 4)
+    ));
+  }
+
+  &__loader{
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__empty-state,
+  &__loader{
+    @include margin.top((
+        xsm: 20
+    ));
   }
 
   &__day {

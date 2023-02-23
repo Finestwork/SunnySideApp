@@ -6,7 +6,7 @@
       <Hourly :hourlyData="hourlyData" :isLoading="isLoading" />
     </div>
     <div class="col-xsm-12 col-xl-3">
-      <Daily :forecast="dailyForecast" />
+      <Daily :forecast="dailyForecast" :isLoading="isLoading" />
     </div>
   </div>
 </template>

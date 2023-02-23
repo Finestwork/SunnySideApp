@@ -166,7 +166,6 @@ export default {
       // Reset the component
       this.resetData();
       this.isSearchLoading = false;
-      this.previousSearch = '';
     },
 
     // Show result when search input is focused
