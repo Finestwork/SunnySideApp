@@ -134,7 +134,7 @@ export default {
         // Create a new array
         this.searchResults = res.data.results.map((obj) => {
           return {
-            flagSrc: `/images/flags/${obj.country_code.toLowerCase()}.svg`,
+            flagSrc: `images/flags/${obj.country_code.toLowerCase()}.svg`,
             countryName: `${obj.country} flag`,
             name: createCountryName(obj),
           };

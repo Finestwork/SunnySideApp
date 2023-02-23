@@ -1,5 +1,5 @@
 export default class WeatherImage {
-  static #IMG_PATH = '/images/weather';
+  static #IMG_PATH = 'images/weather';
 
   static #WEATHER_INTERPRETATION = {
     0: {
