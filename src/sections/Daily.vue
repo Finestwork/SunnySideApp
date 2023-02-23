@@ -13,7 +13,7 @@
           }}</span>
         </span>
         <span class="daily-forecast__temperature"
-          >{{ data.temperature.max }}°C</span
+          >{{ data.apparentTemperature }}°C</span
         >
       </li>
     </ul>

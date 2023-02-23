@@ -105,7 +105,7 @@ export default {
         longitude: longitude,
         timezone: timezone,
         daily:
-          'weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,windspeed_10m_max',
+          'weathercode,apparent_temperature_max,apparent_temperature_min,temperature_2m_min,sunrise,sunset,windspeed_10m_max',
         start_date: DateConversion.toYMD(new Date()),
         end_date: DateConversion.toYMD(DateConversion.addDate(6)),
       });
