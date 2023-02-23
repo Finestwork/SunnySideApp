@@ -2,13 +2,15 @@
   <div class="search">
     <div class="search__text-input-wrapper" ref="textInputWrapper">
       <input
+        ref="searchInput"
         type="text"
         placeholder="Search city name here"
+        @focus="onFocus"
         @keyup="searchPlace"
       />
     </div>
 
-    <div class="search__result" ref="searchResult">
+    <div class="search__result" ref="searchResult" v-if="isFocused">
       <!-- Search Results -->
       <div class="result__items" v-if="shouldDisplayResultItems">
         <button
@@ -72,6 +74,7 @@ export default {
       isSearchLoading: false,
       searchNotFound: false,
       searchError: false,
+      isFocused: false,
       previousSearch: '',
     };
   },
@@ -79,18 +82,10 @@ export default {
     this.searchPlace = EventRateLimiter.debounce(this.searchPlace, 450);
   },
   mounted() {
-    PositionHelper.caclcTopFromSibling(
-      this.$refs.textInputWrapper,
-      this.$refs.searchResult,
-      10
-    );
+    this.attachEventToBody();
   },
   emits: ['searchPlace'],
   methods: {
-    /*
-     * TODO:
-     * Error State
-     */
     // Search place only when key is up
     searchPlace(e) {
       const VALUE = e.target.value.trim();
@@ -174,11 +169,34 @@ export default {
       this.previousSearch = '';
     },
 
+    // Show result when search input is focused
+    onFocus() {
+      this.isFocused = true;
+    },
+
     /*
      * =====================
      * Helpers
      * =====================
      */
+
+    // Hide search result when search input is out of focused
+    attachEventToBody() {
+      document.body.addEventListener('click', (e) => {
+        const TARGET = e.target;
+        const { searchInput: SEARCH_INPUT, searchResult: SEARCH_RESULT } =
+          this.$refs;
+        const IS_OUT_OF_FOCUSED =
+          TARGET !== SEARCH_INPUT &&
+          !!SEARCH_RESULT &&
+          TARGET !== SEARCH_RESULT &&
+          !SEARCH_RESULT.contains(TARGET);
+
+        if (IS_OUT_OF_FOCUSED) {
+          this.isFocused = false;
+        }
+      });
+    },
 
     // Resets everything except to loading state
     resetData() {
@@ -222,6 +240,19 @@ export default {
       );
     },
   },
+  watch: {
+    isFocused(isFocused) {
+      if (isFocused) {
+        this.$nextTick(() => {
+          PositionHelper.caclcTopFromSibling(
+            this.$refs.textInputWrapper,
+            this.$refs.searchResult,
+            10
+          );
+        });
+      }
+    },
+  },
 };
 </script>
 
@@ -236,7 +267,7 @@ export default {
 
 // prettier-ignore
 .search {
-    position: relative;
+  position: relative;
 
   &__text-input-wrapper {
     input[type='text'] {
@@ -248,25 +279,27 @@ export default {
       color: map.get(text.$main, 50);
       background-color: darken(map.get(main.$primary, 200), 75%);
       @include padding.all-sides((
-        xsm: 13
+          xsm: 13
       ));
       @include font-size.responsive((
-        xsm: map.get(major-second.$scale, 3)
+          xsm: map.get(major-second.$scale, 3)
       ));
+
       &:focus {
         outline: none;
         box-shadow: 0 0 0 4px rgba(map.get(main.$primary, 800), 0.5);
       }
 
       &:hover,
-      &:focus{
+      &:focus {
         background-color: darken(map.get(main.$primary, 800), 3%);
       }
     }
   }
 
-  &__result{
+  &__result {
     overflow: hidden;
+    z-index: 999;
     position: absolute;
     left: 0;
     width: 100%;
@@ -276,66 +309,69 @@ export default {
     background-color: white;
     font-weight: 600;
 
-    .result__btn{
+    .result__btn {
       width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      cursor: pointer;
+      border: none;
+      background-color: white;
+      overflow: hidden;
+      align-items: center;
+      color: map.get(text.$main, 700);
+      @include padding.all-sides((
+          xsm: 10
+      ));
+
+      &:hover {
+        background-color: map.get(text.$main, 50);
+      }
+
+      .btn__flag {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
         display: flex;
-        justify-content: flex-start;
-        cursor: pointer;
-        border: none;
-        background-color: white;
         overflow: hidden;
-        align-items: center;
-        color: map.get(text.$main, 700);
-        @include padding.all-sides((
-            xsm: 10
+        position: relative;
+        flex-shrink: 0;
+        @include margin.right((
+            xsm: 6
         ));
 
-        &:hover{
-            background-color: map.get(text.$main, 50);
+        img {
+          width: auto;
+          height: 100%;
         }
-
-        .btn__flag{
-          width: 35px;
-          height: 35px;
-          border-radius: 50%;
-          display: flex;
-          overflow: hidden;
-          position: relative;
-          @include margin.right((
-            xsm: 6
-          ));
-          img{
-            width: auto;
-            height: 100%;
-          }
-        }
+      }
     }
 
-    .result__loader{
+    .result__loader {
       @include margin.vertical((
-        xsm: 13
+          xsm: 13
       ));
       @include margin.horizontal((
-        xsm: 10
+          xsm: 10
       ));
-      .loader{
+
+      .loader {
         @include margin.bottom((
-          xsm: 8
+            xsm: 8
         ));
 
-        &:last-of-type{
+        &:last-of-type {
           margin-bottom: 0;
         }
       }
     }
 
     .result__error,
-    .result__search-not-found{
+    .result__search-not-found {
       text-align: center;
       font-weight: 600;
       color: map.get(text.$main, 300);
       @include font-size.responsive((
-        xsm: map.get(major-second.$scale, 4)
+          xsm: map.get(major-second.$scale, 4)
       ));
       @include padding.vertical((
           xsm: 15

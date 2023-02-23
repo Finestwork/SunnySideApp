@@ -6,7 +6,7 @@
       <Hourly :hourlyData="hourlyData" />
     </div>
     <div class="col-xsm-12 col-xl-3">
-      <Daily :forecast="dailyForecast"/>
+      <Daily :forecast="dailyForecast" />
     </div>
   </div>
 </template>
@@ -21,8 +21,8 @@ import DayTable from './sections/DayTable.vue';
 import Weather from './assets/js/Helpers/APIs/Weather';
 import DateConversion from './assets/js/Helpers/DateConversion';
 import WeatherInterpretation from './assets/js/Helpers/WeatherInterpretation';
-import DailyForecast from "./assets/js/Helpers/DailyForecast";
-import DayInfo from "./assets/js/Helpers/DayInfo";
+import DailyForecast from './assets/js/Helpers/DailyForecast';
+import DayInfo from './assets/js/Helpers/DayInfo';
 
 export default {
   components: {
@@ -35,103 +35,86 @@ export default {
     return {
       hourlyData: { hourly_units: {}, data: [] },
       dayInfo: {},
-      dailyForecast: []
+      dailyForecast: [],
     };
-  },
-  mounted() {
-    const handleHourlyDataRequest = (res) => {
-      const DATA = res.data;
-
-      if (Object.keys(DATA).length !== 0) {
-        const HOURLY_WEATHER_CODE_LIST = DATA.hourly.weathercode;
-        const HOURLY_APPARENT_TEMP = DATA.hourly.apparent_temperature;
-
-        // Create a new set of data
-        const HOURLY_DATA_ARR = DATA.hourly.time.map((hour, ind) => {
-          const TIME = new Date(hour).toLocaleTimeString('en', {
-            timeStyle: 'short',
-          });
-          const WEATHER_CODE = HOURLY_WEATHER_CODE_LIST[ind];
-          const APPARENT_TEMP = HOURLY_APPARENT_TEMP[ind];
-
-          // Get the weather intrepration
-          const WEATHER_INTERPRETATION =
-            WeatherInterpretation.getImageDataFromWeatherCode(
-              hour,
-              WEATHER_CODE
-            );
-          const IMG_SRC = WEATHER_INTERPRETATION.imgSrc;
-
-          return {
-            time: TIME,
-            apparentTemp: APPARENT_TEMP,
-            weatherImgSrc: IMG_SRC,
-          };
-        });
-
-        // Create a new hour array
-        this.hourlyData = Object.assign(
-          {},
-          {
-            hourly_units: DATA.hourly_units,
-            data: HOURLY_DATA_ARR,
-          }
-        );
-      }
-    };
-    const handleDailyDataRequest = (res) => {
-      console.log(res.data);
-      const DATA = res.data;
-
-
-      this.dailyForecast = DailyForecast.extractData(res.data);
-      this.dayInfo = DayInfo.extractData(res.data);
-    };
-    const handleGeneralError = (err) => {
-      console.log(err);
-    };
-
-    // Add timezone later
-    // Testing
-    const HOURLY_REQUEST = Weather.getWeather({
-      latitude: 14.6,
-      longitude: 120.98,
-      timezone: 'Asia/Bangkok',
-      hourly: 'apparent_temperature,weathercode',
-      start_date: DateConversion.toYMD(new Date()),
-      end_date: DateConversion.toYMD(new Date()),
-    });
-    const DAILY_REQUEST = Weather.getWeather({
-      latitude: 14.6,
-      longitude: 120.98,
-      timezone: 'Asia/Bangkok',
-      daily:
-        'weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,windspeed_10m_max',
-      start_date: DateConversion.toYMD(new Date()),
-      end_date: DateConversion.toYMD(DateConversion.addDate(6)),
-    });
-
-    Promise.all([HOURLY_REQUEST, DAILY_REQUEST])
-      .then(([hourlyData, dailyData]) => {
-        handleHourlyDataRequest(hourlyData);
-        handleDailyDataRequest(dailyData);
-      })
-      .catch(handleGeneralError);
   },
   methods: {
-    fetchWeather({ latitude, longitude }) {
-      // Handle the request
-      const handleResult = (e) => {
-        console.log(e);
+    fetchWeather({ latitude, longitude, timezone }) {
+      const handleHourlyDataRequest = (res) => {
+        const DATA = res.data;
+
+        if (Object.keys(DATA).length !== 0) {
+          const HOURLY_WEATHER_CODE_LIST = DATA.hourly.weathercode;
+          const HOURLY_APPARENT_TEMP = DATA.hourly.apparent_temperature;
+
+          // Create a new set of data
+          const HOURLY_DATA_ARR = DATA.hourly.time.map((hour, ind) => {
+            const TIME = new Date(hour).toLocaleTimeString('en', {
+              timeStyle: 'short',
+            });
+            const WEATHER_CODE = HOURLY_WEATHER_CODE_LIST[ind];
+            const APPARENT_TEMP = HOURLY_APPARENT_TEMP[ind];
+
+            // Get the weather intrepration
+            const WEATHER_INTERPRETATION =
+              WeatherInterpretation.getImageDataFromWeatherCode(
+                hour,
+                WEATHER_CODE
+              );
+            const IMG_SRC = WEATHER_INTERPRETATION.imgSrc;
+
+            return {
+              time: TIME,
+              apparentTemp: APPARENT_TEMP,
+              weatherImgSrc: IMG_SRC,
+            };
+          });
+
+          // Create a new hour array
+          this.hourlyData = Object.assign(
+            {},
+            {
+              hourly_units: DATA.hourly_units,
+              data: HOURLY_DATA_ARR,
+            }
+          );
+        }
       };
-      const handleError = (e) => {
-        console.log(e);
+      const handleDailyDataRequest = (res) => {
+        console.log(res.data);
+        const DATA = res.data;
+
+        this.dailyForecast = DailyForecast.extractData(res.data);
+        this.dayInfo = DayInfo.extractData(res.data);
+      };
+      const handleGeneralError = (err) => {
+        console.log(err);
       };
 
-      // Send request to the server
-      Weather.getWeather({ latitude, longitude })
-        .then(handleResult)
-        .catch(handleError);
+      const HOURLY_REQUEST = Weather.getWeather({
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+        hourly: 'apparent_temperature,weathercode',
+        start_date: DateConversion.toYMD(new Date()),
+        end_date: DateConversion.toYMD(new Date()),
+      });
+      const DAILY_REQUEST = Weather.getWeather({
+        latitude: latitude,
+        longitude: longitude,
+        timezone: timezone,
+        daily:
+          'weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,windspeed_10m_max',
+        start_date: DateConversion.toYMD(new Date()),
+        end_date: DateConversion.toYMD(DateConversion.addDate(6)),
+      });
+
+      Promise.all([HOURLY_REQUEST, DAILY_REQUEST])
+        .then(([hourlyData, dailyData]) => {
+          handleHourlyDataRequest(hourlyData);
+          handleDailyDataRequest(dailyData);
+        })
+        .catch(handleGeneralError);
     },
   },
 };
@@ -171,7 +154,6 @@ body {
 main {
   min-height: 100vh;
   display: flex;
-  align-items: center;
   @include padding.horizontal((
     xsm: 35
   ));
