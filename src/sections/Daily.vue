@@ -2,19 +2,30 @@
   <aside class="daily-forecast">
     <h2 class="daily-forecast__title">7-Day Forecast</h2>
     <ul class="daily-forecast__list">
-      <li class="daily-forecast__list-item" v-for="n in 6">
-        <span class="daily-forecast__day">Today</span>
+      <li class="daily-forecast__list-item" v-for="data in forecast">
+        <span class="daily-forecast__day">{{data.time}}</span>
         <span class="daily-forecast__img-wrapper">
           <span class="daily-forecast__img">
-            <img src="/images/weather/day/0.png" />
+            <img :src="data.imgSrc" alt="Weather Image" />
           </span>
-          <span class="daily-forecast__weather">Cloudy</span>
+          <span class="daily-forecast__weather">{{data.imgInterpretation}}</span>
         </span>
-        <span class="daily-forecast__temperature">37°C</span>
+        <span class="daily-forecast__temperature">{{data.temperature.max}}°C</span>
       </li>
     </ul>
   </aside>
 </template>
+
+<script>
+export default {
+  props: {
+    forecast: {
+      type: Array,
+      required: true
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @use 'sass:map';
@@ -92,10 +103,24 @@
     }
   }
 
+  &__temperature{
+    width: 50px;
+    text-align: right;
+    color: map.get(main.$primary, 500);
+  }
+  &__day{
+    width: 30px;
+  }
+
+  &__day,
+  &__weather{
+    color: map.get(text.$main, 100);
+  }
+
+  &__day,
   &__temperature,
   &__weather{
     font-weight: 600;
-    color: map.get(text.$main, 100);
   }
 
 }

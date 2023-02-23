@@ -24,10 +24,10 @@ export default class WeatherImage {
       },
     },
     3: {
-      interpretation: 'Overcast',
+      interpretation: 'Mostly Cloudy',
       img: {
-        day: `${WeatherImage.#IMG_PATH}/day/3.png`,
-        night: `${WeatherImage.#IMG_PATH}/night/3.png`,
+        day: `${WeatherImage.#IMG_PATH}/day/2.png`,
+        night: `${WeatherImage.#IMG_PATH}/night/2.png`,
       },
     },
     45: {
@@ -199,6 +199,16 @@ export default class WeatherImage {
       },
     },
   };
+
+  // Gets the correct interpretation of the weather based on a current time
+  static getCurrentImageData(time, code) {
+    const DAY_TIME = time.toLowerCase().includes('pm') ? 'day' : 'night';
+
+    return {
+      interpretation: WeatherImage.#WEATHER_INTERPRETATION[code].interpretation,
+      imgSrc: WeatherImage.#WEATHER_INTERPRETATION[code].img[DAY_TIME],
+    };
+  }
 
   // Gets the correct interpretation of the weather together with the image to display
   static getImageDataFromWeatherCode(date, code) {

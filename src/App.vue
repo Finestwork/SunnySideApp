@@ -2,11 +2,11 @@
   <div class="row">
     <div class="col-xsm-12 col-lg-9">
       <Search @searchPlace="fetchWeather" />
-      <Hourly :hourlyData="hourlyData" />
       <DayTable :dayInfo="dayInfo" />
+      <Hourly :hourlyData="hourlyData" />
     </div>
     <div class="col-xsm-12 col-lg-3">
-      <Daily />
+      <Daily :forecast="dailyForecast"/>
     </div>
   </div>
 </template>
@@ -21,6 +21,8 @@ import DayTable from './sections/DayTable.vue';
 import Weather from './assets/js/Helpers/APIs/Weather';
 import DateConversion from './assets/js/Helpers/DateConversion';
 import WeatherInterpretation from './assets/js/Helpers/WeatherInterpretation';
+import DailyForecast from "./assets/js/Helpers/DailyForecast";
+import DayInfo from "./assets/js/Helpers/DayInfo";
 
 export default {
   components: {
@@ -33,6 +35,7 @@ export default {
     return {
       hourlyData: { hourly_units: {}, data: [] },
       dayInfo: {},
+      dailyForecast: []
     };
   },
   mounted() {
@@ -79,24 +82,10 @@ export default {
     const handleDailyDataRequest = (res) => {
       console.log(res.data);
       const DATA = res.data;
-      const APPARENT_TEMP_MAX = DATA.daily.apparent_temperature_max[0];
-      const APPARENT_TEMP_MIN = DATA.daily.apparent_temperature_min[0];
-      const SUNRISE = DateConversion.shortenTime(DATA.daily.sunrise[0]);
-      const SUNSET = DateConversion.shortenTime(DATA.daily.sunset[0]);
-      const WINDSPEED = DATA.daily.windspeed_10m_max[0];
 
-      this.dayInfo = Object.assign(
-        {},
-        {
-          apparentTemp: {
-            max: APPARENT_TEMP_MAX,
-            min: APPARENT_TEMP_MIN,
-          },
-          sunrise: SUNRISE,
-          sunset: SUNSET,
-          windspeed: WINDSPEED,
-        }
-      );
+
+      this.dailyForecast = DailyForecast.extractData(res.data);
+      this.dayInfo = DayInfo.extractData(res.data);
     };
     const handleGeneralError = (err) => {
       console.log(err);
