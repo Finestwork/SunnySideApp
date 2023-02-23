@@ -5,6 +5,7 @@ export default defineConfig({
   base: '',
   build: {
     polyfillDynamicImport: false,
+    outDir: 'docs',
   },
   plugins: [vue()],
 });
