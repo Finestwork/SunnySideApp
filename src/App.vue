@@ -3,7 +3,7 @@
     <div class="col-xsm-12 col-xl-9">
       <Search @searchPlace="fetchWeather" />
       <DayTable :dayInfo="dayInfo" />
-      <Hourly :hourlyData="hourlyData" />
+      <Hourly :hourlyData="hourlyData" :isLoading="isLoading" />
     </div>
     <div class="col-xsm-12 col-xl-3">
       <Daily :forecast="dailyForecast" />
@@ -33,13 +33,16 @@ export default {
   },
   data() {
     return {
-      hourlyData: { hourly_units: {}, data: [] },
+      hourlyData: {},
       dayInfo: {},
       dailyForecast: [],
+      isLoading: false,
     };
   },
   methods: {
     fetchWeather({ latitude, longitude, timezone }) {
+      this.isLoading = true;
+
       const handleHourlyDataRequest = (res) => {
         const DATA = res.data;
 
@@ -81,11 +84,9 @@ export default {
         }
       };
       const handleDailyDataRequest = (res) => {
-        console.log(res.data);
-        const DATA = res.data;
-
         this.dailyForecast = DailyForecast.extractData(res.data);
         this.dayInfo = DayInfo.extractData(res.data);
+        this.isLoading = false;
       };
       const handleGeneralError = (err) => {
         console.log(err);

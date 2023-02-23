@@ -5,6 +5,7 @@
       :options="splideOptions"
       @splide:drag="onSplideDrag"
       @splide:dragged="onSplideDragged"
+      v-if="shouldDisplayMainContent"
     >
       <SplideSlide v-for="(data, ind) in hourlyData.data" :key="data">
         <span class="hourly__time">{{ data.time }}</span>
@@ -17,18 +18,30 @@
         >
       </SplideSlide>
     </Splide>
+    <p class="hourly__empty-state" v-if="shouldDisplayEmptyContent">
+      No data to display
+    </p>
+    <Loader class="hourly__loader" v-if="shouldDisplayLoader" />
   </section>
 </template>
 
 <script>
+import Loader from '../components/Loader.vue';
+
+// NPM
 import { Splide, SplideSlide } from '@splidejs/vue-splide';
 
 export default {
   components: {
+    Loader,
     Splide,
     SplideSlide,
   },
   props: {
+    isLoading: {
+      type: Boolean,
+      required: true,
+    },
     hourlyData: {
       type: Object,
       required: true,
@@ -55,6 +68,17 @@ export default {
       ROOT.classList.remove('hourly--dragging');
     },
   },
+  computed: {
+    shouldDisplayMainContent() {
+      return Object.keys(this.hourlyData).length !== 0 && !this.isLoading;
+    },
+    shouldDisplayEmptyContent() {
+      return Object.keys(this.hourlyData).length === 0 && !this.isLoading;
+    },
+    shouldDisplayLoader() {
+      return Object.keys(this.hourlyData).length === 0 && this.isLoading;
+    },
+  },
 };
 </script>
 
@@ -74,37 +98,35 @@ export default {
   background-color: darken(map.get(main.$primary, 200), 75%);
   border-radius: 20px;
   @include margin.top((
-    xsm: 25,
+      xsm: 25,
   ));
   @include padding.vertical((
-    xsm: 25
+      xsm: 25
   ));
 
-  &__title{
+  &__title {
     font-weight: 700;
     color: map.get(main.$primary, 100);
-    @include margin.bottom((
-      xsm: 30
-    ));
+
     @include margin.left((
-      xsm: 20
+        xsm: 20
     ));
   }
 
-  &__time{
+  &__time {
     white-space: nowrap;
     font-weight: 600;
     color: map.get(main.$secondary, 500);
     @include font-size.responsive((
-      xsm: map.get(major-second.$scale, 4)
+        xsm: map.get(major-second.$scale, 4)
     ));
   }
 
-  &__temperature{
+  &__temperature {
     font-weight: 700;
     color: white;
     @include font-size.responsive((
-      xsm: map.get(major-second.$scale, 5) - 3
+        xsm: map.get(major-second.$scale, 5) - 3
     ));
   }
 
@@ -112,7 +134,7 @@ export default {
     width: 50px;
     display: flex;
     @include margin.vertical((
-      xsm: 15
+        xsm: 15
     ));
 
     > img {
@@ -121,18 +143,46 @@ export default {
     }
   }
 
-  & :deep(){
-    .splide{
+  &__empty-state{
+    font-weight: 500;
+    text-align: center;
+    font-style: italic;
+    color: map.get(main.$primary, 700);
+    @include font-size.responsive((
+      xsm: map.get(major-second.$scale, 4)
+    ));
+  }
+
+  &__loader{
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__empty-state,
+  &__loader{
+    @include margin.top((
+        xsm: 20
+    ));
+  }
+
+  & :deep() {
+    .splide {
       cursor: grab;
       list-style: none;
       display: flex;
-      &__track{
+      @include margin.top((
+          xsm: 30
+      ));
+
+      &__track {
         width: 100%;
       }
-      &__list{
+
+      &__list {
         display: flex;
       }
-      &__slide{
+
+      &__slide {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -140,10 +190,10 @@ export default {
         width: 185px;
         border-right: 2px solid map.get(text.$main, 400);
         @include padding.vertical((
-          xsm: 7
+            xsm: 7
         ));
 
-        &:last-of-type{
+        &:last-of-type {
           border-right: 0;
         }
       }
@@ -151,7 +201,7 @@ export default {
   }
 
   /* States */
-  .hourly--dragging{
+  .hourly--dragging {
     user-select: none;
     cursor: grabbing;
   }
