@@ -14,7 +14,8 @@
     "sass": "^1.58.3",
     "sass-loader": "^13.2.0",
     "vue": "^3.2.45",
-    "vue-content-loader": "^2.0.1"
+    "vue-content-loader": "^2.0.1",
+    "vue-toast-notification": "^3.0.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

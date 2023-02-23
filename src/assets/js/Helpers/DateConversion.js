@@ -1,4 +1,4 @@
-export default class DateConvevrsion {
+export default class DateConversion {
   // Convert a date to its year-month-day representation
   static toYMD(date) {
     const DATE = new Date(date);
@@ -7,7 +7,10 @@ export default class DateConvevrsion {
     const MONTH = DATE.getMonth() + 1; // Starts at 0
     const DAY = DATE.getDate();
 
-    return `${YEAR}-${MONTH.toString().padStart(2, '0')}-${DAY.toString().padStart(2, '0')}`;
+    return `${YEAR}-${MONTH.toString().padStart(
+      2,
+      '0'
+    )}-${DAY.toString().padStart(2, '0')}`;
   }
 
   // Add date based on the given parameter value
@@ -26,7 +29,7 @@ export default class DateConvevrsion {
   }
 
   // Returns a Date object with the specified date and the current time, using the local timezone offset.
-  static addTimeToCurrentDate(date){
+  static addTimeToCurrentDate(date) {
     const DATE = new Date();
     const NOW = new Date(date);
     NOW.setHours(DATE.getHours());
@@ -37,9 +40,9 @@ export default class DateConvevrsion {
   }
 
   // This returns the time string based on a given timezone
-  static getTimeFromTimezone(timeZone){
+  static getTimeFromTimezone(timeZone) {
     const DATE = new Date();
 
-    return DATE.toLocaleTimeString('en', {timeZone, timeStyle: 'short'});
+    return DATE.toLocaleTimeString('en', { timeZone, timeStyle: 'short' });
   }
 }

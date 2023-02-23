@@ -88,8 +88,15 @@ export default {
         this.dayInfo = DayInfo.extractData(res.data);
         this.isLoading = false;
       };
-      const handleGeneralError = (err) => {
-        console.log(err);
+      const handleGeneralError = () => {
+        this.isLoading = false;
+        const TOAST_MSG =
+          "Unfortunately, you can't search for now, Please try again later.";
+        const TOAST_OPTIONS = {
+          duration: 3000,
+        };
+
+        this.$toast.error(TOAST_MSG, TOAST_OPTIONS);
       };
 
       const HOURLY_REQUEST = Weather.getWeather({
@@ -123,9 +130,12 @@ export default {
 
 <style lang="scss">
 @use 'sass:map';
+@use 'assets/scss/1-Settings/css-properties/font-size/major-second';
+@use 'assets/scss/1-Settings/css-properties/colors/safety';
 @use 'assets/scss/1-Settings/css-properties/colors/text';
 @use 'assets/scss/1-Settings/css-properties/colors/main';
 @use 'assets/scss/2-Tools/mixins/css-properties/padding';
+@use 'assets/scss/2-Tools/mixins/css-properties/font-size';
 @use 'assets/scss/3-Generics/reset-form-fields';
 @use 'assets/scss/3-Generics/normalize';
 @use 'assets/scss/5-Layouts/columns';
@@ -165,5 +175,25 @@ main {
 
 .row {
   width: 100%;
+}
+
+// prettier-ignore
+.v-toast__item {
+  &.v-toast__item--error{
+    background-color: map.get(safety.$danger, 500);
+
+    .v-toast {
+      &__icon {
+        display: none;
+      }
+      &__text {
+        font-weight: 600;
+        @include font-size.responsive((
+            xsm: map.get(major-second.$scale, 3)
+        ));
+      }
+    }
+  }
+
 }
 </style>
