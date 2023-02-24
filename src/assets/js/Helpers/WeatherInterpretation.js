@@ -202,7 +202,8 @@ export default class WeatherImage {
 
   // Gets the correct interpretation of the weather based on a current time
   static getCurrentImageData(time, code) {
-    const DAY_TIME = time.toLowerCase().includes('pm') ? 'day' : 'night';
+    const CURRENT_HOUR = parseInt(time);
+    const DAY_TIME =  CURRENT_HOUR >= 6 && CURRENT_HOUR <= 16 ? 'day' : 'night';
 
     return {
       interpretation: WeatherImage.#WEATHER_INTERPRETATION[code].interpretation,

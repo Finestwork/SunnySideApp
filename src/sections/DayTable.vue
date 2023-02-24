@@ -90,6 +90,8 @@ export default {
     getRootWrapperClass() {
       let BASE = 'day-table';
       BASE += this.dayInfo.isDay ? ' daytime' : ' nighttime';
+
+      console.log(this.dayInfo.isDay);
       return BASE;
     },
     canDisplayData() {
