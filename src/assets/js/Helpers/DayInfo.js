@@ -16,9 +16,10 @@ export default class DayInfo {
     const SUNRISE = DateConversion.shortenTime(dataObj.daily.sunrise[0]);
     const SUNSET = DateConversion.shortenTime(dataObj.daily.sunset[0]);
     const WIND_SPEED = dataObj.daily.windspeed_10m_max[0];
+    const CURRENT_HOUR = parseInt(CURRENT_TIME.split(':')[0]);
 
     return {
-      isDay: CURRENT_TIME.includes('pm'),
+      isDay: CURRENT_HOUR >= 6 && CURRENT_HOUR <= 16,
       imgSrc: WeatherInterpretation.getCurrentImageData(
         CURRENT_TIME,
         WEATHER_CODE

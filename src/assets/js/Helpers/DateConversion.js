@@ -43,6 +43,6 @@ export default class DateConversion {
   static getTimeFromTimezone(timeZone) {
     const DATE = new Date();
 
-    return DATE.toLocaleTimeString('en', { timeZone, timeStyle: 'short' });
+    return DATE.toLocaleTimeString('en', { hour12:false, timeZone, timeStyle: 'short' });
   }
 }
